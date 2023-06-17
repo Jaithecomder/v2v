@@ -1,0 +1,15 @@
+<net xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.16" junctionCornerDetail="5" limitTurnSpeed="5.50" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
+    <location netOffset="0.00,0.00" convBoundary="0.00,0.00,2000.00,0.00" origBoundary="-10000000000.00,-10000000000.00,10000000000.00,10000000000.00" projParameter="!"/>
+    <edge id="E0" from="J0" to="J1" priority="-1">
+    <lane id="E0_0" index="0" speed="16.667" length="2000.00" shape="0.00,-3.2 2000.00,-3.2"/>
+<lane id="E0_1" index="1" speed="16.667" length="2000.00" shape="0.00,0.0 2000.00,0.0"/>
+<lane id="E0_2" index="2" speed="16.667" length="2000.00" shape="0.00,3.2 2000.00,3.2"/>
+<lane id="E0_3" index="3" speed="16.667" length="2000.00" shape="0.00,6.4 2000.00,6.4"/>
+<junction id="J0" type="dead_end" x="0.00" y="0.00" incLanes="" intLanes="" shape="0.00,0.00 0.00,12.8"/>
+<junction id="J1" type="dead_end" x="2000.00" y="0.00" incLanes="E0_0 E0_1 E0_2 E0_3" intLanes="" shape="2000.00,12.8 2000.00,0.00"/>
+<vehicleTypes>
+<vType id="taxi" accel="0.8" decel="4.5" length="3.0" maxSpeed="25.0" guiShape="passenger"/>
+<vType id="emv" vClass="emergency"/>
+</vehicleTypes>
+</edge>
+</net>
