@@ -1,0 +1,17 @@
+def stopping_vehicles(how_many_vehicles_to_stop = HOW_MANY_VEHICLES_TO_STOP):
+    vehicle_ids = traci.vehicle.getIDList()
+    
+    # Remove "v_1" from the list if it exists
+    if "v_1" in vehicle_ids:
+        vehicle_ids = list(vehicle_ids)
+        vehicle_ids.remove("v_1")
+        vehicle_ids = tuple(vehicle_ids)
+    
+    # Select a random subset of vehicles to stop
+    vehicles_to_stop = random.sample(vehicle_ids, min(how_many_vehicles_to_stop, len(vehicle_ids)))
+    
+    # Set the speed of selected vehicles to zero
+    for vehicle_id in vehicles_to_stop:
+        traci.vehicle.setSpeed(vehicle_id, 2.8)
+
+
