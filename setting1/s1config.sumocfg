@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="/home/abhi/Documents/v2v/data_cleaning/setting1/s1erbnet.net.xml"/>
+        <route-files value="/home/abhi/Documents/v2v/data_cleaning/setting1/s1rou.rou.xml"/>
+    </input>
+
+</configuration>
