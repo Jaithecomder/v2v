@@ -1,0 +1,6 @@
+***Starting server on port 40113 ***
+Loading net-file from '/home/abhi/Documents/v2v/data_cleaning/setting3/s3net.net.xml' ... done (33ms).
+Loading done.
+Simulation started with time: 0.00.
+Warning: Teleporting vehicle 'v_1'; collision with vehicle 'taxi_v194.0', lane='E0_3', gap=-4.27, time=212.00 stage=laneChange.
+Warning: Vehicle 'v_1' teleports beyond arrival edge 'E0', time=212.00.
