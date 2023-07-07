@@ -40,7 +40,7 @@ def request_front_vehicles_to_change_lane(ev, CD, best_lane_id):
     ev_lane_id = traci.vehicle.getLaneID(ev)       
     lv = traci.vehicle.getLength(ev)  
     pos = traci.vehicle.getPosition(ev)
-
+    
     for veh_id in traci.lane.getLastStepVehicleIDs(best_lane_id):
         veh_pos = traci.vehicle.getPosition(veh_id)
         veh_dist = veh_pos[0] - pos[0] - lv
@@ -85,3 +85,26 @@ def stopping_vehicles(strategy, same_lane=IF_SAME_LANE, how_many_vehicles_to_sto
             print(f"Invalid vehicle ID: {vehicle_id}")
 
                 
+def lane_probability(lane, vehicle):
+    # Get lane statistics
+    min_speed, avg_speed = get_speeds_within_cd(vehicle, lane, CD)
+    # Calculate maximum speed limit for lane
+    max_speed = traci.lane.getMaxSpeed(lane)
+    
+    # Calculate the number of vehicles within communication distance ahead of the given vehicle
+    mv = traci.vehicle.getMinGap(vehicle)
+    lv = traci.vehicle.getLength(vehicle)
+    max_num_vehicles = int(CD / (mv + lv))
+
+    pos = traci.vehicle.getPosition(vehicle)
+    num_vehicles = 0
+
+    for veh_id in traci.lane.getLastStepVehicleIDs(lane):
+        veh_pos = traci.vehicle.getPosition(veh_id)
+        veh_dist = veh_pos[0] - pos[0] - lv
+        #print(veh_dist)
+        if veh_dist > 0 and veh_dist <= CD:
+                num_vehicles += 1
+
+    # Calculate lane utility
+    utility = WA * (min_speed / max_speed) + WB * (avg_speed / max_speed) + WC * ((max_num_vehicles - num_vehicles) / max_num_vehicles)

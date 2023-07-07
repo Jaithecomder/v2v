@@ -7,6 +7,8 @@ from .utilities import *
 from .helpers import *
 from .hyperparameters import *
 
+global decided_lane_id  # FOR BLS STRATEGY, choosing the lane only by BLS at RI only
+
 def traci_simulation(sumo_cmd, strategy, recomputation_interval, introduce_stop, stop_vehicle_time, setting):
     traci.start(sumo_cmd)
     
@@ -40,12 +42,17 @@ def traci_simulation(sumo_cmd, strategy, recomputation_interval, introduce_stop,
                     ev_entry_count = True
                     v1_departure = traci.vehicle.getDeparture(vehicle)
                     print(f"\n\tVehicle {vehicle} entered the simulation at time {v1_departure:.2f}")
+                    if strategy == 'BLS':
+                        decided_lane_id = 0
+
                 if strategy=="BLS":
                     if traci.simulation.getTime() % recomputation_interval == 0:
                         current_lane = traci.vehicle.getLaneID(vehicle)
                         current_utility = calculate_utility(current_lane, vehicle)
+                             
                         best_utility = current_utility
                         best_lane = current_lane
+                        decided_lane_id = best_lane[-1]  ###1
                         for lane in lanes:
                             if lane != current_lane:
                                 utility = calculate_utility(lane, vehicle)
@@ -54,17 +61,26 @@ def traci_simulation(sumo_cmd, strategy, recomputation_interval, introduce_stop,
                                     best_lane = lane
                         # If the best lane for the vehicle is different from its current lane, change lanes
                         if best_lane != current_lane:
+                            print(rf"  At Sim Step {traci.simulation.getTime()} : The EV current lane is {current_lane} and current utility is {current_utility} The best lane is {best_lane} and The best utility is {best_utility}")
                             best_lane_id = best_lane[-1]  # get the lane ID for the best lane index
-                            traci.vehicle.changeLane(vehicle, best_lane_id, duration=EV_DURATION)  # change to the best lane by ID
+                            decided_lane_id = best_lane_id ###2
+                            #traci.vehicle.changeLane(vehicle, decided_lane_id, duration=EV_DURATION)  # change to the best lane by ID
                             if setting != 5:
                                 request_front_vehicles_to_change_lane(vehicle, CD, best_lane)
+                            traci.vehicle.changeLane(vehicle, decided_lane_id, duration=EV_DURATION)  # change to the best lane by ID
+
                         else:
-                            traci.vehicle.setLaneChangeMode(vehicle, 0)
-                            best_lane_id = best_lane[-1]
+                            traci.vehicle.changeLane(vehicle, decided_lane_id, duration=0)  # change to the best lane by ID
+                            #traci.vehicle.setLaneChangeMode(vehicle, 0)
+                            print(rf"  At Sim Step {traci.simulation.getTime()} : The EV current lane is {current_lane} and current utility is {current_utility}. The EV is not switching the lane here.")
                             if setting != 5:
                                 request_front_vehicles_to_change_lane(vehicle, CD, best_lane)
                     else:
-                            traci.vehicle.setLaneChangeMode(vehicle, 0)
+                        traci.vehicle.changeLane(vehicle, decided_lane_id, duration=2)  # change to the best lane by ID
+                        current_lane = traci.vehicle.getLaneID(vehicle)
+                        current_utility = calculate_utility(current_lane, vehicle)
+                        print(rf"At Sim Step {traci.simulation.getTime()} : The EV current lane is {current_lane} and current utility is {current_utility}")
+                        #traci.vehicle.setLaneChangeMode(vehicle, 0)
 
                 elif strategy == "FLS":
                     traci.vehicle.setLaneChangeMode(vehicle, 0)
@@ -78,6 +94,44 @@ def traci_simulation(sumo_cmd, strategy, recomputation_interval, introduce_stop,
                 
                 elif strategy == "ERB":
                     pass
+################################################################################################################################################################################################################                
+                elif strategy == "MC":
+                    #pass
+                    if traci.simulation.getTime() % recomputation_interval == 0:
+                        current_lane = traci.vehicle.getLaneID(vehicle)
+                        current_utility = lane_probability(current_lane, vehicle)
+                             
+                        best_utility = current_utility
+                        best_lane = current_lane
+                        decided_lane_id = best_lane[-1]
+                        for lane in lanes:
+                            if lane != current_lane:
+                                utility = lane_probability(lane, vehicle)
+                                if utility - current_utility > DELTA and utility > best_utility:
+                                    best_utility = utility
+                                    best_lane = lane
+                        # If the best lane for the vehicle is different from its current lane, change lanes
+                        if best_lane != current_lane:
+                            print(rf"  At Sim Step {traci.simulation.getTime()} : The EV current lane is {current_lane} and current utility is {current_utility} The best lane is {best_lane} and The best utility is {best_utility}")
+                            best_lane_id = best_lane[-1]  # get the lane ID for the best lane index
+                            decided_lane_id = best_lane_id
+                            #traci.vehicle.changeLane(vehicle, decided_lane_id, duration=EV_DURATION)  # change to the best lane by ID
+                            if setting != 5:
+                                request_front_vehicles_to_change_lane(vehicle, CD, best_lane)
+                            traci.vehicle.changeLane(vehicle, decided_lane_id, duration=EV_DURATION)  # change to the best lane by ID
+
+                        else:
+                            traci.vehicle.changeLane(vehicle, decided_lane_id, duration=0)  # change to the best lane by ID
+                            #traci.vehicle.setLaneChangeMode(vehicle, 0)
+                            print(rf"  At Sim Step {traci.simulation.getTime()} : The EV current lane is {current_lane} and current utility is {current_utility}. The EV is not switching the lane here.")
+                            if setting != 5:
+                                request_front_vehicles_to_change_lane(vehicle, CD, best_lane)
+                    else:
+                        traci.vehicle.changeLane(vehicle, decided_lane_id, duration=2)  # change to the best lane by ID
+                        current_lane = traci.vehicle.getLaneID(vehicle)
+                        current_utility = lane_probability(current_lane, vehicle)
+                        print(rf"At Sim Step {traci.simulation.getTime()} : The EV current lane is {current_lane} and current utility is {current_utility}")
+############################################################################################################################################################################################################################################################
 
             # Get the lane and speed information for the vehicle
             current_lane = traci.vehicle.getLaneID(vehicle)
@@ -98,7 +152,7 @@ def traci_simulation(sumo_cmd, strategy, recomputation_interval, introduce_stop,
     return (v1_departure, v1_arrival)
 
 def run_sumo(NET_FILE, ROUTE_FILE, CONFIG_FILE, strategy="BLS", setting=None):
-    sumo_cmd = ["sumo-gui", 
+    sumo_cmd = ["sumo", 
                 "-c", CONFIG_FILE, 
                 "-n", NET_FILE, 
                 "-r", ROUTE_FILE, 
