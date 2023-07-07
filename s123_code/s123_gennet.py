@@ -27,18 +27,25 @@ def create_network_file(lane_length, lane_speeds, setting, save_dir_path, save_n
     net_file += f'<vehicleTypes>\n'
     if setting == 3:
             net_file += f'<vType id="taxi" accel="0.8" decel="4.5" speedDev="0.2" sigma="0.5" length="3.0" maxSpeed="25.0" guiShape="passenger"/>\n'
-            net_file += f'<vType id="emv" vClass="emergency"/>\n'
+            #net_file += f'<vType id="emv" vClass="emergency"/>\n'
+            net_file += f'<vType id="emv" vClass="emergency" speedFactor="1.5"><param key="has.bluelight.device" value="true"/></vType>\n'
+
 
     elif setting == 2:
             net_file += f'<vType id="taxi" accel="0.8" decel="4.5" sigma="0.5" length="3.0" maxSpeed="25.0" guiShape="passenger"/>\n'
             net_file += f'<vType id="emv" vClass="emergency"/>\n'
+            #net_file += f'<vType id="emv" vClass="emergency" speedFactor="1.5"><param key="has.bluelight.device" value="true"/></vType>\n'
 
     elif setting == 1:
             net_file += f'<vType id="taxi" accel="0.8" decel="4.5" length="3.0" maxSpeed="25.0" guiShape="passenger"/>\n'
             net_file += f'<vType id="emv" vClass="emergency"/>\n'
+            #net_file += f'<vType id="emv" vClass="emergency" speedFactor="1.5"><param key="has.bluelight.device" value="true"/></vType>\n'
+
     elif setting == 5:
             net_file += f'<vType id="taxi" accel="0.8" decel="4.5" sigma="0.5" length="3.0" maxSpeed="25.0" guiShape="passenger"/>\n'
-            net_file += f'<vType id="emv" vClass="emergency"/>\n'
+            #net_file += f'<vType id="emv" vClass="emergency"/>\n'
+            net_file += f'<vType id="emv" vClass="emergency" speedFactor="1.5"><param key="has.bluelight.device" value="true"/></vType>\n'
+            
 
     for i in range(250):
         vehicle_name = rf"taxi_v{i}"

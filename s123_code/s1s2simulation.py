@@ -59,7 +59,7 @@ def main(strategy, setting, veh_density_prob, num_runs, lane_length, fix_same_ra
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Pass arguments through command line.')
-    parser.add_argument('-s', '--strategy', type=str, help='Strategy: FLS, SUMO, BLS, ERB', default='FLS')
+    parser.add_argument('-s', '--strategy', type=str, help='Strategy: FLS, SUMO, BLS, ERB', default='ERB')
     parser.add_argument('-st', '--setting', type=int, help='Setting value', default=3)
     parser.add_argument('-vdp', '--veh_density_prob', type=str, help='Vehicle density probability', default='0.60')
     parser.add_argument('-runs', '--num_runs', type=int, help='Num of runs U have to average for', default=10)
