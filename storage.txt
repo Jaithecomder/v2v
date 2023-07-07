@@ -1,0 +1,31 @@
+def stopping_vehicles(how_many_vehicles_to_stop = HOW_MANY_VEHICLES_TO_STOP):
+    vehicle_ids = traci.vehicle.getIDList()
+    
+    # Remove "v_1" from the list if it exists
+    if "v_1" in vehicle_ids:
+        vehicle_ids = list(vehicle_ids)
+        vehicle_ids.remove("v_1")
+        vehicle_ids = tuple(vehicle_ids)
+    
+    # Select a random subset of vehicles to stop
+    vehicles_to_stop = random.sample(vehicle_ids, min(how_many_vehicles_to_stop, len(vehicle_ids)))
+    
+    # Set the speed of selected vehicles to zero
+    for vehicle_id in vehicles_to_stop:
+        traci.vehicle.setSpeed(vehicle_id, 2.8)
+
+
+...........................................................................................................
+
+                    '''# In the BLS strategy introdue the EV in the best utility Lane
+                    if strategy=='BLS':
+                        best_utility = None 
+                        best_lane = None
+                        for lane in lanes:
+                            current_utility = calculate_utility(lane, vehicle)
+                            best_utility = current_utility
+                            best_lane = lane
+                            best_lane_id = best_lane[-1]  # get the lane ID for the best lane index
+                            traci.vehicle.changeLane(vehicle, best_lane_id, duration=EV_DURATION) '''
+
+.............................................................................................................
